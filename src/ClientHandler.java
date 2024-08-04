@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class ClientHandler implements Runnable {
 
-    static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
+    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
     private Socket socket;
     private String clientUserName;
     private BufferedReader bufferedReader;
@@ -18,14 +18,19 @@ public class ClientHandler implements Runnable {
     public ClientHandler(Socket socket) {
         try {
             this.socket = socket;
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.clientUserName = bufferedReader.readLine();
             clientHandlers.add(this);
-            broadcastMessage("SERVER " + clientUserName + " has entered the chat!");
+            broadcastMessage("SERVER : " + clientUserName + " has entered the chat!");
         }catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
+    }
+
+    
+    public String getClientUserName() {
+        return clientUserName;
     }
 
     @Override
@@ -59,11 +64,11 @@ public class ClientHandler implements Runnable {
 
     public void removeClientHandler() {
         clientHandlers.remove(this);
-        broadcastMessage("SERVER " + clientUserName + " has Left the chat!");
+        broadcastMessage("SERVER : " + clientUserName + " has Left the chat!");
     }
 
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
-
+        removeClientHandler();
         try {
             if (bufferedReader != null) {
                 bufferedReader.close();
@@ -79,6 +84,12 @@ public class ClientHandler implements Runnable {
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public String toString() {
+        return "ClientHandler [socket=" + socket + ", clientUserName=" + clientUserName + ", bufferedReader="
+                + bufferedReader + ", bufferedWriter=" + bufferedWriter + "]";
     }
 
 }

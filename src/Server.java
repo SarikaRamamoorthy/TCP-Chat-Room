@@ -13,10 +13,11 @@ public class Server {
     
     public void startServer() {
         try {
+            System.out.println("Server listening at port 6789");
             while (!serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
-                System.out.println("A new client has connected!");
                 ClientHandler clientHandler = new ClientHandler(socket);
+                System.out.println(clientHandler.getClientUserName()+" has connected!");
                 Thread thread = new Thread(clientHandler);
                 thread.start();
             }
@@ -38,7 +39,7 @@ public class Server {
 
     public static void main(String[] args) {
         try {
-            ServerSocket serverSocket = new ServerSocket(1234);
+            ServerSocket serverSocket = new ServerSocket(6789);
             Server server = new Server(serverSocket);
             server.startServer();
         } catch (Exception e) {
